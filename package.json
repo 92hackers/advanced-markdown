@@ -1,21 +1,20 @@
 {
   "name": "marked",
-  "description": "A markdown parser built for speed",
-  "author": "Christopher Jeffrey",
-  "version": "0.6.3",
-  "main": "./lib/marked.js",
+  "description": "A markdown parser built for speed, based on marked.js",
+  "author": "Chen yuan",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
   "bin": "./bin/marked",
   "man": "./man/marked.1",
   "files": [
     "bin/",
     "lib/",
-    "man/",
-    "marked.min.js"
+    "man/"
   ],
-  "repository": "git://github.com/markedjs/marked.git",
+  "repository": "git://github.com/92hackers/marked.git",
   "homepage": "https://marked.js.org",
   "bugs": {
-    "url": "http://github.com/markedjs/marked/issues"
+    "url": "http://github.com/92hackers/marked/issues"
   },
   "license": "MIT",
   "keywords": [
