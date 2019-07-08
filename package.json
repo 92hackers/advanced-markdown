@@ -2,17 +2,27 @@
   "name": "advanced-marked",
   "description": "A markdown parser built for speed, support custom markdown grammar, based on marked.js",
   "author": "Chen yuan",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./dist/index.js",
   "bin": "./bin/marked",
   "man": "./man/marked.1",
   "files": [
     "bin/",
     "lib/",
+    "dist/",
     "man/"
   ],
+  "npmName": "advanced-marked",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ],
   "repository": "git://github.com/92hackers/marked.git",
-  "homepage": "https://marked.js.org",
+  "homepage": "http://github.com/92hackers/marked/",
   "bugs": {
     "url": "http://github.com/92hackers/marked/issues"
   },
