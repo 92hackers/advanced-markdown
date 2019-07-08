@@ -1,6 +1,6 @@
 {
-  "name": "marked",
-  "description": "A markdown parser built for speed, based on marked.js",
+  "name": "advanced-marked",
+  "description": "A markdown parser built for speed, support custom markdown grammar, based on marked.js",
   "author": "Chen yuan",
   "version": "0.1.0",
   "main": "./dist/index.js",
