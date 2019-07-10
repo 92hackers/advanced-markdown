@@ -38,6 +38,6 @@ function runSpecs(title, dir, showCompletionTable, options) {
 
 //runSpecs('GFM', './gfm', true, { gfm: true });
 runSpecs('CommonMark', './commonmark', true, { headerIds: false });
-runSpecs('Original', './original', false, { gfm: false });
-runSpecs('New', './new');
-runSpecs('ReDOS', './redos');
+// runSpecs('Original', './original', false, { gfm: false });
+// runSpecs('New', './new');
+// runSpecs('ReDOS', './redos');
