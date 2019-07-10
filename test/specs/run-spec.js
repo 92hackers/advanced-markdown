@@ -16,6 +16,7 @@ function runSpecs(title, dir, showCompletionTable, options) {
           spec.options = Object.assign({}, options, (spec.options || {}));
           const example = (spec.example ? ' example ' + spec.example : '');
           const passFail = (spec.shouldFail ? 'fail' : 'pass');
+
           (spec.only ? fit : it)('should ' + passFail + example, () => {
             const before = process.hrtime();
             if (spec.shouldFail) {
@@ -35,7 +36,7 @@ function runSpecs(title, dir, showCompletionTable, options) {
   });
 }
 
-runSpecs('GFM', './gfm', true, { gfm: true });
+//runSpecs('GFM', './gfm', true, { gfm: true });
 runSpecs('CommonMark', './commonmark', true, { headerIds: false });
 runSpecs('Original', './original', false, { gfm: false });
 runSpecs('New', './new');
