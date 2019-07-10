@@ -48,6 +48,7 @@
     "@markedjs/html-differ": "^2.0.1",
     "babel-eslint": "^10.0.2",
     "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-module-resolver": "^3.2.0",
     "cheerio": "^1.0.0-rc.3",
     "commonmark": "0.x",
     "eslint": "^5.16.0",
