@@ -1,21 +1,28 @@
-const marked = require('../../dist');
+const Marked = require('../../dist');
+const HeadingGrammar = require('../../dist/grammars/heading')
 
 describe('Test heading ID functionality', () => {
   it('should add id attribute by default', () => {
-    const renderer = new marked.Renderer();
+    const marked = new Marked()
+    const heading = new HeadingGrammar(marked)
     const slugger = new marked.Slugger();
-    const header = renderer.heading('test', 1, 'test', slugger);
+
+    const header = heading.renderHtmlStr('test', 1, 'test', slugger);
     expect(header).toBe('<h1 id="test">test</h1>\n');
   });
 
   it('should NOT add id attribute when options set false', () => {
-    const renderer = new marked.Renderer({ headerIds: false });
-    const header = renderer.heading('test', 1, 'test');
+    const marked = new Marked({ headerIds: false })
+    const heading = new HeadingGrammar(marked)
+    const header = heading.renderHtmlStr('test', 1, 'test');
+
     expect(header).toBe('<h1>test</h1>\n');
   });
 });
 
 describe('Test slugger functionality', () => {
+  const marked = new Marked()
+
   it('should use lowercase slug', () => {
     const slugger = new marked.Slugger();
     expect(slugger.slug('Test')).toBe('test');
@@ -61,6 +68,8 @@ describe('Test slugger functionality', () => {
 });
 
 describe('Test paragraph token type', () => {
+  const marked = new Marked();
+
   it('should use the "paragraph" type on top level', () => {
     const md = 'A Paragraph.\n\n> A blockquote\n\n- list item\n';
 

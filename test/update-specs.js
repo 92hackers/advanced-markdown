@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
-const marked = require('../');
+const Marked = require('../');
 const htmlDiffer = require('./helpers/html-differ.js');
 const fs = require('fs');
 const path = require('path');
@@ -10,6 +10,8 @@ function removeFiles(dir) {
     fs.unlinkSync(path.join(dir, file));
   });
 }
+
+const marked = new Marked()
 
 function updateCommonmark(dir) {
   return fetch('https://raw.githubusercontent.com/commonmark/commonmark.js/master/package.json')
