@@ -4,3 +4,4 @@ test/compiled_tests
 
 *.swp
 dist/*
+*.log
