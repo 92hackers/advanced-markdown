@@ -1,7 +1,8 @@
-const marked = require('../../');
+const Marked = require('../../');
 const htmlDiffer = require('./html-differ.js');
 
 beforeEach(() => {
+  const marked = new Marked()
   marked.setOptions(marked.getDefaults());
 
   jasmine.addMatchers({
