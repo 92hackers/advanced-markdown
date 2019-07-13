@@ -66,7 +66,7 @@
     "uglify-js": "^3.5.8"
   },
   "scripts": {
-    "compile": "babel lib --out-dir dist",
+    "compile": "babel src --out-dir dist",
     "test": "jasmine --config=jasmine.json",
     "test:unit": "npm test -- test/unit/**/*-spec.js",
     "test:specs": "npm test -- test/specs/**/*-spec.js",
