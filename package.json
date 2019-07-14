@@ -59,6 +59,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vuln-regex-detector": "^1.0.4",
     "front-matter": "^3.0.2",
+    "highlight.js": "^9.15.8",
+    "husky": "^3.0.0",
     "jasmine": "^3.4.0",
     "markdown": "0.x",
     "markdown-it": "8.x",
@@ -71,15 +73,17 @@
     "test:unit": "npm test -- test/unit/**/*-spec.js",
     "test:specs": "npm test -- test/specs/**/*-spec.js",
     "test:lint": "eslint bin/marked .",
-    "test:redos": "eslint --plugin vuln-regex-detector --rule '\"vuln-regex-detector/no-vuln-regex\": 2' lib/marked.js",
-    "test:node4": "npx node@4 ./node_modules/jasmine/bin/jasmine.js --config=jasmine.json",
     "test:update": "node test/update-specs.js",
     "bench": "node test/bench.js",
-    "lint": "eslint --fix bin/marked .",
-    "build": "uglifyjs lib/marked.js -cm  --comments /Copyright/ -o marked.min.js",
+    "lint": "eslint ./src",
     "preversion": "npm run build && (git diff --quiet || git commit -am 'minify')"
   },
   "engines": {
     "node": ">=0.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "eslint ./src"
+    }
   }
 }

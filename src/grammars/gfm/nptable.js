@@ -8,21 +8,18 @@ import { block } from '../../grammar-rules'
 export function splitCells(tableRow, count) {
   // ensure that every cell-delimiting pipe has a space
   // before it to distinguish it from an escaped pipe
-  var row = tableRow.replace(/\|/g, function(match, offset, str) {
-      var escaped = false,
-        curr = offset;
-      while (--curr >= 0 && str[curr] === '\\') escaped = !escaped;
-      if (escaped) {
-        // odd number of slashes means | is escaped
-        // so we leave it alone
-        return '|';
-      } else {
-        // add space before unescaped |
-        return ' |';
-      }
-    }),
-    cells = row.split(/ \|/),
-    i = 0;
+  const row = tableRow.replace(/\|/g, (match, offset, str) => {
+    let escaped = false
+    let curr = offset;
+    while (--curr >= 0 && str[curr] === '\\') escaped = !escaped;
+
+    // odd number of slashes means | is escaped
+    // so we leave it alone
+    // add space before unescaped |
+    return escaped ? '|' : ' |'
+  })
+
+  const cells = row.split(/ \|/)
 
   if (cells.length > count) {
     cells.splice(count);
@@ -30,7 +27,7 @@ export function splitCells(tableRow, count) {
     while (cells.length < count) cells.push('');
   }
 
-  for (; i < cells.length; i++) {
+  for (let i = 0; i < cells.length; i++) {
     // leading or trailing whitespace is ignored per the gfm spec
     cells[i] = cells[i].trim().replace(/\\\|/g, '|');
   }
@@ -90,16 +87,14 @@ class NpTable {
       return false
     }
 
-    let header = '',
-        body = '',
-        i,
-        row,
-        cell,
-        j;
+    let header = ''
+    let body = ''
+    let row = ''
+    let cell = ''
 
     // header
     cell = '';
-    for (i = 0; i < token.header.length; i++) {
+    for (let i = 0; i < token.header.length; i++) {
       cell += this.renderTableCell(
         inlineLexer.output(token.header[i]),
         {
@@ -111,11 +106,11 @@ class NpTable {
 
     header += this.renderTableRow(cell)
 
-    for (i = 0; i < token.cells.length; i++) {
+    for (let i = 0; i < token.cells.length; i++) {
       row = token.cells[i];
 
       cell = '';
-      for (j = 0; j < row.length; j++) {
+      for (let j = 0; j < row.length; j++) {
         cell += this.renderTableCell(
           inlineLexer.output(row[j]),
           {
@@ -133,9 +128,9 @@ class NpTable {
 
   renderTableCell(content, flags) {
     const type = flags.header ? 'th' : 'td';
-    const tag = flags.align ?
-      '<' + type + ' align="' + flags.align + '">' :
-      '<' + type + '>';
+    const tag = flags.align
+      ? '<' + type + ' align="' + flags.align + '">'
+      : '<' + type + '>';
 
     return tag + content + '</' + type + '>\n';
   }
@@ -150,12 +145,12 @@ class NpTable {
       finalBody = '<tbody>' + finalBody + '</tbody>';
     }
 
-    return '<table>\n' +
-      '<thead>\n' +
-      header +
-      '</thead>\n' +
-      finalBody +
-      '</table>\n';
+    return '<table>\n'
+    + '<thead>\n'
+    + header
+    + '</thead>\n'
+    + finalBody
+    + '</table>\n';
   }
 }
 

@@ -9,6 +9,8 @@ class Slugger {
     this.seen = {}
   }
 
+  checkDuplicate = slug => this.seen[slug] !== undefined
+
   slug(value) {
     let slug = value
       .toLowerCase()
@@ -16,12 +18,13 @@ class Slugger {
       .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, '')
       .replace(/\s/g, '-');
 
-    if (this.seen.hasOwnProperty(slug)) {
-      let originalSlug = slug;
+    if (this.checkDuplicate(slug)) {
+      const originalSlug = slug;
+
       do {
         this.seen[originalSlug]++;
-        slug = originalSlug + '-' + this.seen[originalSlug];
-      } while (this.seen.hasOwnProperty(slug));
+        slug = `${originalSlug}-${this.seen[originalSlug]}`
+      } while (this.checkDuplicate(slug));
     }
 
     this.seen[slug] = 0;

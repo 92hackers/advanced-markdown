@@ -20,6 +20,10 @@ class Parser {
 
     this.grammars = this.options.grammars
 
+    if (!this.grammars.length) {
+      throw new Error('Grammars size is zero, at least one grammar required')
+    }
+
     this.slugger = new Slugger();
   }
 
@@ -47,7 +51,7 @@ class Parser {
   }
 
   // Get next token
-  next () {
+  next() {
     this.token = this.tokens.pop();
     return this.token;
   }
@@ -70,13 +74,16 @@ class Parser {
   }
 
   // Parse Current Token
-  tok () {
+  tok() {
     let htmlStr = null
 
     this.grammars.some((grammar) => {
-      htmlStr = grammar.parse(this.token, this.inlineLexer,
-                              this.inlineTextLexer, this.tok.bind(this),
-                              this.next.bind(this), this.parseText.bind(this))
+      htmlStr = grammar.parse(
+        this.token, this.inlineLexer,
+        this.inlineTextLexer, this.tok.bind(this),
+        this.next.bind(this), this.parseText.bind(this),
+      )
+
       return htmlStr || htmlStr === ''
     })
 
@@ -91,7 +98,7 @@ class Parser {
       throw new Error(errMsg);
     }
 
-    return htmlStr
+    return htmlStr // eslint-disable-line
   }
 }
 

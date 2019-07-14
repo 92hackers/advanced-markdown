@@ -13,33 +13,6 @@ class Renderer {
     this.options = options || getDefaultOptions()
   }
 
-  code(code, infostring, escaped) {
-  }
-
-  hr() {
-  }
-
-  list() {
-  }
-
-  listitem(text) {
-  }
-
-  checkbox(checked) {
-    return '<input ' +
-      (checked ? 'checked="" ' : '') +
-      'disabled="" type="checkbox"' +
-      (this.options.xhtml ? ' /' : '') +
-      '> ';
-  }
-
-  paragraph(text) {
-    return '<p>' + text + '</p>\n';
-  }
-
-  table(header, body) {
-  }
-
   // span level renderer
   strong(text) {
     return '<strong>' + text + '</strong>';
@@ -61,30 +34,33 @@ class Renderer {
     return '<del>' + text + '</del>';
   }
 
-  link(href, title, text) {
-    href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
+  link(srcHref, title, text) {
+    const href = cleanUrl(this.options.sanitize, this.options.baseUrl, srcHref);
     if (href === null) {
       return text;
     }
-    var out = '<a href="' + escape(href) + '"';
+
+    let out = '<a href="' + escape(href) + '"';
     if (title) {
       out += ' title="' + title + '"';
     }
     out += '>' + text + '</a>';
+
     return out;
   }
 
-  image(href, title, text) {
-    href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
+  image(srcHref, title, text) {
+    const href = cleanUrl(this.options.sanitize, this.options.baseUrl, srcHref);
     if (href === null) {
       return text;
     }
 
-    var out = '<img src="' + href + '" alt="' + text + '"';
+    let out = '<img src="' + href + '" alt="' + text + '"';
     if (title) {
       out += ' title="' + title + '"';
     }
     out += this.options.xhtml ? '/>' : '>';
+
     return out;
   }
 
