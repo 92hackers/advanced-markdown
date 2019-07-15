@@ -18,7 +18,7 @@ The current project target will focus on **extensibility**, **ready to use** and
 3. Split inline grammars into self modules.
 4. Add more unit test cases.
 5. Add benchmark test cases, and optimize the lib based on the test result.
-6. Implement 5 to 10 other killer markdown grammars.
+6. Implement 5 to 10 other killer markdown grammars, **via separate repository,**
 7. Write guidelines on how to design and implement custom markdown grammars.
 
 - ⚡ built for speed
