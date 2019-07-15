@@ -2,7 +2,7 @@
   "name": "advanced-marked",
   "description": "A markdown parser built for speed, support custom markdown grammar, based on marked.js",
   "author": "Chen yuan",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./dist/index.js",
   "bin": "./bin/marked",
   "man": "./man/marked.1",
@@ -76,7 +76,9 @@
     "test:update": "node test/update-specs.js",
     "bench": "node test/bench.js",
     "lint": "eslint ./src",
-    "preversion": "npm run build && (git diff --quiet || git commit -am 'minify')"
+    "build": "uglifyjs lib/marked.js -cm  --comments /Copyright/ -o marked.min.js",
+    "preversion": "npm run build && (git diff --quiet || git commit -am 'minify')",
+    "prepublishOnly": "yarn compile"
   },
   "engines": {
     "node": ">=0.10.0"
