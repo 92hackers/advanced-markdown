@@ -136,9 +136,6 @@ block.pedantic = merge({}, block.normal, {
 
 const inline = {
   escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
-  fontColor: /^!!(#[A-Za-z0-9]{6}|[a-zA-Z]{2,10})\s*(.*?)!!(?!!)/,
-  fontBgColor: /^!!!(#[A-Za-z0-9]{6}|[a-zA-Z]{2,10})\s*(.*?)!!!(?!!)/,
-  fontSize: /^!(\d{1,2})\s*([^!]+?)!/,
   autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/, // eslint-disable-line no-control-regex
   url: noop,
   tag: '^comment'

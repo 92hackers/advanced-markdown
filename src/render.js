@@ -67,22 +67,6 @@ class Renderer {
   text(text) {
     return text;
   }
-
-  inlineStyle(styleStr, text) {
-    return `<span style="${styleStr}">${text}</span>`
-  }
-
-  fontColor(color, text) {
-    return this.inlineStyle(`color: ${color}`, text)
-  }
-
-  fontBgColor(color, text) {
-    return this.inlineStyle(`background-color: ${color}`, text)
-  }
-
-  fontSize(size, text) {
-    return this.inlineStyle(`font-size: ${size}px`, text)
-  }
 }
 
 export default Renderer

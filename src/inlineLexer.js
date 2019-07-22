@@ -43,6 +43,10 @@ class InlineLexer {
     this.renderer = this.options.renderer || new Renderer();
     this.renderer.options = this.options;
 
+    // Custom inline grammars.
+    // Note: it could be empty
+    this.inlineGrammars = this.options.inlineGrammars;
+
     if (!this.links) {
       throw new Error('Tokens array requires a `links` property.');
     }
@@ -81,21 +85,39 @@ class InlineLexer {
     let src = originalSrc
 
     while (src.length > 0) {
+      let isStrMatched = false
+
+      // Match custom inline grammars
+      this.inlineGrammars.some((grammar) => { // eslint-disable-line no-loop-func
+        const matchedStr = grammar.rules.inline.exec(src)
+        if (!matchedStr) {
+          return false
+        }
+
+        // Get truncated src string
+        const subStr = grammar.parse(matchedStr, src, this.output.bind(this), this.links)
+
+        if (subStr === -1) {
+          return false
+        }
+
+        out += subStr
+        src = src.substring(matchedStr[0].length)
+        isStrMatched = true
+
+        return true
+      })
+
+      // If custom inline grammar matched, jump to next match
+      if (isStrMatched) {
+        continue
+      }
+
       // escape
       if (cap = this.rules.escape.exec(src)) {
         src = src.substring(cap[0].length);
         out += escape(cap[1]);
         continue;
-      }
-
-      // font color
-      if (cap = this.rules.fontColor.exec(src)) {
-        const [fullMatch, color, txt] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontColor(color, this.output(txt))
-
-        continue
       }
 
       // font background color
@@ -106,16 +128,6 @@ class InlineLexer {
         out += this.renderer.fontBgColor(bgColor, this.output(txt))
 
         continue
-      }
-
-      // font size
-      if (cap = this.rules.fontSize.exec(src)) {
-        const [fullMatch, size, txt] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontSize(size, this.output(txt))
-
-        continue;
       }
 
       // tag

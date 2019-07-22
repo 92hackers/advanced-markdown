@@ -62,7 +62,7 @@ class Lexer {
           return false
         }
 
-        src = subStr || src.substring(cap[0].length);
+        src = subStr || src.substring(cap[0].length)
         isStrMatched = true
 
         return true

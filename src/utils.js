@@ -189,3 +189,8 @@ export function getDefaultOptions() {
     grammars: [],
   };
 }
+
+// Attach suctom styles to inline text
+export function inlineStyle(styleStr, text) {
+  return `<span style="${styleStr}">${text}</span>`
+}
