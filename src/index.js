@@ -29,6 +29,9 @@ class Marked {
     // Cache all markdown available grammars
     this.grammars = defaultGrammars
 
+    // Register custom inline grammars
+    this.inlineGrammars = []
+
     // Init grammars
     this.initGrammars()
 
@@ -67,14 +70,23 @@ class Marked {
     this.grammars = [...grammars, ...this.grammars]
   }
 
+  registerInlineGrammars(grammars = []) {
+    if (!Array.isArray(grammars)) {
+      throw new Error('Grammars parameter should be an array')
+    }
+
+    this.inlineGrammars = grammars
+  }
+
   initGrammars() {
     const grammars = this.grammars.map(Grammar => new Grammar(this))
+    const inlineGrammars = this.inlineGrammars.map(Grammar => new Grammar(this))
 
     // Expose grammars to support customize all grammars behaviours
     this.grammars = grammars
 
     // Set grammars in options
-    this.setOptions({ grammars })
+    this.setOptions({ grammars, inlineGrammars })
   }
 
   marked(src, opt = {}, cb) {
