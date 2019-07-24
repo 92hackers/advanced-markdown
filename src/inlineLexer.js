@@ -120,16 +120,6 @@ class InlineLexer {
         continue;
       }
 
-      // font background color
-      if (cap = this.rules.fontBgColor.exec(src)) {
-        const [fullMatch, bgColor, txt] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontBgColor(bgColor, this.output(txt))
-
-        continue
-      }
-
       // tag
       if (cap = this.rules.tag.exec(src)) {
         if (!this.inLink && /^<a /i.test(cap[0])) {

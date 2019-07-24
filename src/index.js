@@ -16,7 +16,9 @@ import Slugger from './slugger'
 
 import defaultGrammars from './grammars'
 
-class Marked {
+import sampleInlineGrammars from './inline-grammars'
+
+class AdvancedMarkdown {
   constructor(options = {}) {
     // Default options.
     this.defaults = getDefaultOptions()
@@ -30,7 +32,7 @@ class Marked {
     this.grammars = defaultGrammars
 
     // Register custom inline grammars
-    this.inlineGrammars = []
+    this.inlineGrammars = sampleInlineGrammars
 
     // Init grammars
     this.initGrammars()
@@ -68,6 +70,7 @@ class Marked {
 
     // Custom grammars should be execute match test firstly.
     this.grammars = [...grammars, ...this.grammars]
+    this.initGrammars()
   }
 
   registerInlineGrammars(grammars = []) {
@@ -75,15 +78,22 @@ class Marked {
       throw new Error('Grammars parameter should be an array')
     }
 
-    this.inlineGrammars = grammars
+    this.inlineGrammars = [...grammars, ...this.inlineGrammars]
+    this.initGrammars()
   }
 
   initGrammars() {
-    const grammars = this.grammars.map(Grammar => new Grammar(this))
-    const inlineGrammars = this.inlineGrammars.map(Grammar => new Grammar(this))
+    // eslint-disable-next-line no-confusing-arrow
+    const instanceGrammar = Grammar => typeof Grammar === 'function'
+      ? new Grammar(this) : Grammar
 
-    // Expose grammars to support customize all grammars behaviours
+    const grammars = this.grammars.map(Grammar => instanceGrammar(Grammar))
+
+    const inlineGrammars = this.inlineGrammars.map(Grammar => instanceGrammar(Grammar))
+
+    // Expose all markdown grammars to support customize all grammars behaviours
     this.grammars = grammars
+    this.inlineGrammars = inlineGrammars
 
     // Set grammars in options
     this.setOptions({ grammars, inlineGrammars })
@@ -122,8 +132,8 @@ class Marked {
 
       return outputHtmlStr
     } catch (e) {
-      e.message += '\nPlease report the problem to https://github.com/92hackers/marked.';
-      if ((opt || this.options).silent && !callback) {
+      e.message += '\nPlease report the problem to https://github.com/92hackers/advanced-markdown\n';
+      if (this.options.silent && !callback) {
         return `<p>An error occurred:</p><pre>${escape(e.message, true)}</pre>`
       }
 
@@ -136,4 +146,4 @@ class Marked {
   }
 }
 
-export default Marked
+export default AdvancedMarkdown
