@@ -14,9 +14,9 @@ import TextRenderer from './renderText'
 import InlineLexer from './inlineLexer'
 import Slugger from './slugger'
 
-import defaultGrammars from './grammars'
+import defaultBlockGrammars from './grammars'
 
-import sampleInlineGrammars from './inline-grammars'
+// import sampleInlineGrammars from './inline-grammars'
 
 class AdvancedMarkdown {
   constructor(options = {}) {
@@ -28,11 +28,11 @@ class AdvancedMarkdown {
 
     merge(this.options, options)
 
-    // Cache all markdown available grammars
-    this.grammars = defaultGrammars
+    // Cache all markdown common and gfm grammars
+    this.blockGrammars = defaultBlockGrammars
 
     // Register custom inline grammars
-    this.inlineGrammars = sampleInlineGrammars
+    this.inlineGrammars = []
 
     // Init grammars
     this.initGrammars()
@@ -59,17 +59,26 @@ class AdvancedMarkdown {
   }
 
   setOptions(opt) {
+    // TODO: prevent register grammars in this way
+    // if (opt.blockGrammars || opt.inlineGrammars) {
+    //   const errMsg = `
+    //     grammars should not be registered with setOptions,
+    //     there is independent methods to register grammars.
+    //   `
+    //   throw new Error(errMsg)
+    // }
+
     merge(this.options, opt);
     return this.marked
   }
 
-  registerCustomGrammar(grammars = []) {
+  registerBlockGrammars(grammars = []) {
     if (!Array.isArray(grammars)) {
       throw new Error('Grammars parameter should be an array')
     }
 
     // Custom grammars should be execute match test firstly.
-    this.grammars = [...grammars, ...this.grammars]
+    this.blockGrammars = [...grammars, ...this.blockGrammars]
     this.initGrammars()
   }
 
@@ -87,16 +96,16 @@ class AdvancedMarkdown {
     const instanceGrammar = Grammar => typeof Grammar === 'function'
       ? new Grammar(this) : Grammar
 
-    const grammars = this.grammars.map(Grammar => instanceGrammar(Grammar))
+    const blockGrammars = this.blockGrammars.map(Grammar => instanceGrammar(Grammar))
 
     const inlineGrammars = this.inlineGrammars.map(Grammar => instanceGrammar(Grammar))
 
     // Expose all markdown grammars to support customize all grammars behaviours
-    this.grammars = grammars
+    this.blockGrammars = blockGrammars
     this.inlineGrammars = inlineGrammars
 
     // Set grammars in options
-    this.setOptions({ grammars, inlineGrammars })
+    merge(this.options, { blockGrammars, inlineGrammars })
   }
 
   marked(src, opt = {}, cb) {

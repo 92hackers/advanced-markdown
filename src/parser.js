@@ -18,9 +18,9 @@ class Parser {
     this.token = null;
     this.options = options || getDefaultOptions(Renderer)
 
-    this.grammars = this.options.grammars
+    this.blockGrammars = this.options.blockGrammars
 
-    if (!this.grammars.length) {
+    if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')
     }
 
@@ -77,7 +77,7 @@ class Parser {
   tok() {
     let htmlStr = null
 
-    this.grammars.some((grammar) => {
+    this.blockGrammars.some((grammar) => {
       htmlStr = grammar.parse(
         this.token, this.inlineLexer,
         this.inlineTextLexer, this.tok.bind(this),

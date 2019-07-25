@@ -186,7 +186,6 @@ export function getDefaultOptions() {
     smartypants: false,
     tables: true,
     xhtml: false,
-    grammars: [],
   };
 }
 

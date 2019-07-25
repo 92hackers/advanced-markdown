@@ -17,10 +17,10 @@ class Lexer {
 
     this.options = options || getDefaultOptions()
 
-    // Passed in grammars
-    this.grammars = this.options.grammars
+    // Passed in block grammars
+    this.blockGrammars = this.options.blockGrammars
 
-    if (!this.grammars.length) {
+    if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')
     }
   }
@@ -51,7 +51,7 @@ class Lexer {
     while (src) {
       let isStrMatched = false
 
-      this.grammars.some((grammar) => { // eslint-disable-line no-loop-func
+      this.blockGrammars.some((grammar) => { // eslint-disable-line no-loop-func
         const cap = grammar.rules.block.exec(src)
         if (!cap) {
           return false
