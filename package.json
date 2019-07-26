@@ -1,18 +1,14 @@
 {
-  "name": "advanced-marked",
+  "name": "advanced-markdown",
   "description": "A markdown parser built for speed, support custom markdown grammar, based on marked.js",
   "author": "Chen yuan",
   "version": "0.1.2",
   "main": "./dist/index.js",
-  "bin": "./bin/marked",
-  "man": "./man/marked.1",
   "files": [
-    "bin/",
     "lib/",
-    "dist/",
-    "man/"
+    "dist/"
   ],
-  "npmName": "advanced-marked",
+  "npmName": "advanced-markdown",
   "npmFileMap": [
     {
       "basePath": "/dist/",
@@ -21,15 +17,14 @@
       ]
     }
   ],
-  "repository": "git://github.com/92hackers/marked.git",
-  "homepage": "http://github.com/92hackers/marked/",
+  "repository": "https://github.com/92hackers/advanced-markdown.git",
+  "homepage": "https://github.com/92hackers/advanced-markdown",
   "bugs": {
-    "url": "http://github.com/92hackers/marked/issues"
+    "url": "https://github.com/92hackers/advanced-markdown/issues"
   },
   "license": "MIT",
   "keywords": [
     "markdown",
-    "markup",
     "html"
   ],
   "tags": [
@@ -64,8 +59,7 @@
     "jasmine": "^3.4.0",
     "markdown": "0.x",
     "markdown-it": "8.x",
-    "node-fetch": "^2.3.0",
-    "uglify-js": "^3.5.8"
+    "node-fetch": "^2.3.0"
   },
   "scripts": {
     "compile": "babel src --out-dir dist",
@@ -76,7 +70,6 @@
     "test:update": "node test/update-specs.js",
     "bench": "node test/bench.js",
     "lint": "eslint ./src",
-    "build": "uglifyjs lib/marked.js -cm  --comments /Copyright/ -o marked.min.js",
     "preversion": "npm run build && (git diff --quiet || git commit -am 'minify')",
     "prepublishOnly": "yarn compile"
   },
