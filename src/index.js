@@ -10,8 +10,6 @@ import {
 
 import Lexer from './lexer'
 import Parser from './parser'
-import TextRenderer from './renderText'
-import InlineLexer from './inlineLexer'
 import Slugger from './slugger'
 
 import defaultBlockGrammars from './grammars'
@@ -37,21 +35,7 @@ class AdvancedMarkdown {
     // Init grammars
     this.initGrammars()
 
-    // Expose internals
-    this.Parser = Parser
-    this.parser = Parser.parse
-
-    this.TextRenderer = TextRenderer
-
-    this.Lexer = Lexer
-    this.lexer = src => Lexer.lex(src, this.options)
-
-    this.InlineLexer = InlineLexer
-    this.inlineLexer = (src, links) => InlineLexer.output(src, links, this.options)
-
     this.Slugger = Slugger
-
-    this.parse = this
   }
 
   getDefaults() {
