@@ -2,44 +2,35 @@
  * Parser
  */
 
-import Slugger from './slugger'
-import {
-  merge,
-  getDefaultOptions,
-} from './utils'
-
-import Renderer from './render'
 import InlineLexer from './inlineLexer'
 import TextRenderer from './renderText'
 
 class Parser {
-  constructor(options) {
-    this.tokens = [];
-    this.token = null;
-    this.options = options || getDefaultOptions(Renderer)
+  constructor(src, markdown) {
+    this.tokens = []
+    this.token = null
 
-    this.blockGrammars = this.options.blockGrammars
+    this.options = markdown.options
+    this.inlineLexer = new InlineLexer(src.links, markdown)
+
+    // use an InlineLexer with a TextRenderer to extract pure text
+    const textRenderer = new TextRenderer()
+    this.inlineTextLexer = new InlineLexer(src.links, markdown, textRenderer)
+
+    this.blockGrammars = markdown.blockGrammars
 
     if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')
     }
-
-    this.slugger = new Slugger();
   }
 
-  static parse = (src, options) => {
-    const parser = new Parser(options);
+  static parse = (src, markdown) => {
+    const parser = new Parser(src, markdown);
     return parser.parse(src);
   }
 
   // src: generated tokens, parse loop
   parse(src) {
-    this.inlineLexer = new InlineLexer(src.links, this.options);
-    // use an InlineLexer with a TextRenderer to extract pure text
-    this.inlineTextLexer = new InlineLexer(
-      src.links,
-      merge({}, this.options, { renderer: new TextRenderer() }),
-    );
     this.tokens = src.reverse();
 
     let out = ''

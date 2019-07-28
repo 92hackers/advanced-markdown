@@ -8,7 +8,6 @@ import {
 
 import {
   escape,
-  getDefaultOptions,
 } from './utils'
 
 import Renderer from './render'
@@ -35,17 +34,16 @@ function findClosingBracket(str, b) {
 }
 
 class InlineLexer {
-  constructor(links, options) {
-    this.options = options || getDefaultOptions()
+  constructor(links, markdown, renderer) {
+    this.options = markdown.options
 
-    this.links = links;
-    this.rules = inline.normal;
-    this.renderer = this.options.renderer || new Renderer();
-    this.renderer.options = this.options;
+    this.links = links
+    this.rules = inline.normal
+    this.renderer = renderer || new Renderer(this.options)
 
     // Custom inline grammars.
     // Note: it could be empty
-    this.inlineGrammars = this.options.inlineGrammars;
+    this.inlineGrammars = markdown.inlineGrammars;
 
     if (!this.links) {
       throw new Error('Tokens array requires a `links` property.');

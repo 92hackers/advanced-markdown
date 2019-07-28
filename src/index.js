@@ -20,10 +20,7 @@ class AdvancedMarkdown {
   constructor(options = {}) {
     // Default options.
     this.defaults = getDefaultOptions()
-
-    // Actual options
     this.options = this.defaults
-
     merge(this.options, options)
 
     // Cache all markdown common and gfm grammars
@@ -53,7 +50,6 @@ class AdvancedMarkdown {
     // }
 
     merge(this.options, opt);
-    return this.marked
   }
 
   registerBlockGrammars(grammars = []) {
@@ -87,9 +83,6 @@ class AdvancedMarkdown {
     // Expose all markdown grammars to support customize all grammars behaviours
     this.blockGrammars = blockGrammars
     this.inlineGrammars = inlineGrammars
-
-    // Set grammars in options
-    merge(this.options, { blockGrammars, inlineGrammars })
   }
 
   marked(src, opt = {}, cb) {
@@ -116,8 +109,8 @@ class AdvancedMarkdown {
     }
 
     try {
-      const tokenTypes = Lexer.lex(src, this.options)
-      const outputHtmlStr = Parser.parse(tokenTypes, this.options);
+      const tokenTypes = Lexer.lex(src, this)
+      const outputHtmlStr = Parser.parse(tokenTypes, this);
 
       if (callback) {
         callback(null, outputHtmlStr)

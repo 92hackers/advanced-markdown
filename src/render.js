@@ -4,13 +4,12 @@
 
 import {
   escape,
-  getDefaultOptions,
   cleanUrl,
 } from './utils'
 
 class Renderer {
   constructor(options) {
-    this.options = options || getDefaultOptions()
+    this.options = options
   }
 
   // span level renderer

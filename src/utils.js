@@ -132,8 +132,9 @@ noop.exec = noop;
 export function merge(obj, ...rest) {
   for (let i = 0; i < rest.length; i++) {
     const target = rest[i];
+
     Object.keys(target).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(target, key)) {
+      if (target[key] !== undefined) {
         obj[key] = target[key]; // eslint-disable-line no-param-reassign
       }
     })
@@ -186,7 +187,7 @@ export function getDefaultOptions() {
     smartypants: false,
     tables: true,
     xhtml: false,
-  };
+  }
 }
 
 // Attach suctom styles to inline text

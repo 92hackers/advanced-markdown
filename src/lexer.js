@@ -6,19 +6,13 @@ import {
   block,
 } from './grammar-rules'
 
-import {
-  getDefaultOptions,
-} from './utils'
-
 class Lexer {
-  constructor(options) {
+  constructor(markdown) {
     this.tokens = [];
     this.tokens.links = Object.create(null);
 
-    this.options = options || getDefaultOptions()
-
     // Passed in block grammars
-    this.blockGrammars = this.options.blockGrammars
+    this.blockGrammars = markdown.blockGrammars
 
     if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')
@@ -29,9 +23,9 @@ class Lexer {
   static rules = block
 
   // Static Lex Method
-  static lex = (src, options) => {
-    const lexer = new Lexer(options);
-    return lexer.lex(src);
+  static lex = (src, markdown) => {
+    const lexer = new Lexer(markdown)
+    return lexer.lex(src)
   }
 
   lex(src) {
