@@ -14,8 +14,6 @@ import Slugger from './slugger'
 
 import defaultBlockGrammars from './grammars'
 
-// import sampleInlineGrammars from './inline-grammars'
-
 class AdvancedMarkdown {
   constructor(options = {}) {
     // Default options.
@@ -85,7 +83,7 @@ class AdvancedMarkdown {
     this.inlineGrammars = inlineGrammars
   }
 
-  marked(src, opt = {}, cb) {
+  parse(src, opt = {}, cb) {
     // throw error in case of non string input
     if (typeof src === 'undefined' || src === null) {
       throw new Error('marked(): input parameter is undefined or null');

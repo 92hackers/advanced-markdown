@@ -13,12 +13,12 @@ describe('Test pass callback into marked: ', () => {
     const md = '# Header'
 
     // pass parameters: src, callback
-    const parsedHtml = marked.marked(md, cb)
+    const parsedHtml = marked.parse(md, cb)
 
     expect(parsedHtml).toBe(expectEdStr)
 
     // pass parameters: src, options, callback
-    const anotherHtml = marked.marked(md, { highlight: () => {} }, cb)
+    const anotherHtml = marked.parse(md, { highlight: () => {} }, cb)
 
     expect(anotherHtml).toBe(expectEdStr)
   })
