@@ -17,7 +17,7 @@ class Parser {
     const textRenderer = new TextRenderer()
     this.inlineTextLexer = new InlineLexer(src.links, markdown, textRenderer)
 
-    this.blockGrammars = markdown.blockGrammars
+    this.blockGrammars = markdown._blockGrammarsArr
 
     if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')

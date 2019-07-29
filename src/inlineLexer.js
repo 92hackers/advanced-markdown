@@ -43,7 +43,7 @@ class InlineLexer {
 
     // Custom inline grammars.
     // Note: it could be empty
-    this.inlineGrammars = markdown.inlineGrammars;
+    this.inlineGrammars = markdown._inlineGrammarsArr;
 
     if (!this.links) {
       throw new Error('Tokens array requires a `links` property.');

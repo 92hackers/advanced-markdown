@@ -14,6 +14,21 @@ import Slugger from './slugger'
 
 import defaultBlockGrammars from './grammars'
 
+// eslint-disable-next-line
+const instanceGrammars = (grammarsArr, markdown) => {
+  return grammarsArr.reduce((accum, CurrentGrammar) => {
+    const instance = new CurrentGrammar(markdown)
+
+    return {
+      grammarsArr: [...accum.grammarsArr, instance],
+      grammars: {
+        ...accum.grammars,
+        [CurrentGrammar.name]: instance,
+      },
+    }
+  }, { grammars: {}, grammarsArr: [] })
+}
+
 class AdvancedMarkdown {
   constructor(options = {}) {
     // Default options.
@@ -22,13 +37,15 @@ class AdvancedMarkdown {
     merge(this.options, options)
 
     // Cache all markdown common and gfm grammars
-    this.blockGrammars = defaultBlockGrammars
+    this._blockGrammarsArr = []
+    this._inlineGrammarsArr = []
 
-    // Register custom inline grammars
-    this.inlineGrammars = []
+    // Expose all grammars to outside
+    this.blockGrammars = {}
+    this.inlineGrammars = {}
 
     // Init grammars
-    this.initGrammars()
+    this.initGrammars(defaultBlockGrammars)
 
     this.Slugger = Slugger
   }
@@ -55,9 +72,7 @@ class AdvancedMarkdown {
       throw new Error('Grammars parameter should be an array')
     }
 
-    // Custom grammars should be execute match test firstly.
-    this.blockGrammars = [...grammars, ...this.blockGrammars]
-    this.initGrammars()
+    this.initGrammars(grammars, 'block')
   }
 
   registerInlineGrammars(grammars = []) {
@@ -65,22 +80,27 @@ class AdvancedMarkdown {
       throw new Error('Grammars parameter should be an array')
     }
 
-    this.inlineGrammars = [...grammars, ...this.inlineGrammars]
-    this.initGrammars()
+    this.initGrammars(grammars, 'inline')
   }
 
-  initGrammars() {
-    // eslint-disable-next-line no-confusing-arrow
-    const instanceGrammar = Grammar => typeof Grammar === 'function'
-      ? new Grammar(this) : Grammar
+  initGrammars(grammarsArray = [], type = 'block') {
+    const { grammars, grammarsArr } = instanceGrammars(grammarsArray, this)
 
-    const blockGrammars = this.blockGrammars.map(Grammar => instanceGrammar(Grammar))
+    switch (type) {
+      case 'block':
+        this._blockGrammarsArr = [...grammarsArr, ...this._blockGrammarsArr]
+        this.blockGrammars = { ...this.blockGrammars, ...grammars }
+        break
 
-    const inlineGrammars = this.inlineGrammars.map(Grammar => instanceGrammar(Grammar))
+      case 'inline':
+        this._inlineGrammarsArr = [...grammarsArr, ...this._inlineGrammarsArr]
+        this.inlineGrammars = { ...this.inlineGrammars, ...grammars }
+        break
 
-    // Expose all markdown grammars to support customize all grammars behaviours
-    this.blockGrammars = blockGrammars
-    this.inlineGrammars = inlineGrammars
+      default:
+        this._blockGrammarsArr = [...grammarsArr, ...this._blockGrammarsArr]
+        this.blockGrammars = { ...this.blockGrammars, ...grammars }
+    }
   }
 
   parse(src, opt = {}, cb) {

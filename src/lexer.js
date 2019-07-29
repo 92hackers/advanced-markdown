@@ -12,7 +12,7 @@ class Lexer {
     this.tokens.links = Object.create(null);
 
     // Passed in block grammars
-    this.blockGrammars = markdown.blockGrammars
+    this.blockGrammars = markdown._blockGrammarsArr
 
     if (!this.blockGrammars.length) {
       throw new Error('Grammars size is zero, at least one grammar required')
