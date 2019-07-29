@@ -4,6 +4,20 @@
 [![downloads](https://badgen.net/npm/dt/marked)](https://www.npmjs.com/package/marked)
 [![snyk](https://snyk.io/test/npm/marked/badge.svg)](https://snyk.io/test/npm/marked)
 
+## Introduction
+
+A brief introduction of advanced markdown.
+
+## Features
+
+add features
+
+## Table of content
+
+Table
+[toc]
+
+
 ## Roadmap
 
 The current project target will focus on **extensibility**, **ready to use** and **high performance**
@@ -20,10 +34,6 @@ The current project target will focus on **extensibility**, **ready to use** and
 - ⬇️ low-level compiler for parsing markdown without caching or blocking for long periods of time
 - ⚖️ light-weight while implementing all markdown features from the supported flavors & specifications
 - 🌐 works in a browser, on a server, or from a command line interface (CLI)
-
-## Features
-
-**TODO: add featues list**
 
 ## Demo
 
