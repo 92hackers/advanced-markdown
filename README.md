@@ -30,11 +30,6 @@ The current project target will focus on **extensibility**, **ready to use** and
 6. Implement 5 to 10 other killer markdown grammars, **via separate repository,**
 7. Write guidelines on how to design and implement custom markdown grammars.
 
-- ⚡ built for speed
-- ⬇️ low-level compiler for parsing markdown without caching or blocking for long periods of time
-- ⚖️ light-weight while implementing all markdown features from the supported flavors & specifications
-- 🌐 works in a browser, on a server, or from a command line interface (CLI)
-
 ## Demo
 
 **TODO:** Demo page
