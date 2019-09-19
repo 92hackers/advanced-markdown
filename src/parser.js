@@ -2,40 +2,35 @@
  * Parser
  */
 
-import Slugger from './slugger'
-import {
-  merge,
-  getDefaultOptions,
-} from './utils'
-
-import Renderer from './render'
 import InlineLexer from './inlineLexer'
 import TextRenderer from './renderText'
 
 class Parser {
-  constructor(options) {
-    this.tokens = [];
-    this.token = null;
-    this.options = options || getDefaultOptions(Renderer)
+  constructor(src, markdown) {
+    this.tokens = []
+    this.token = null
 
-    this.grammars = this.options.grammars
+    this.options = markdown.options
+    this.inlineLexer = new InlineLexer(src.links, markdown)
 
-    this.slugger = new Slugger();
+    // use an InlineLexer with a TextRenderer to extract pure text
+    const textRenderer = new TextRenderer()
+    this.inlineTextLexer = new InlineLexer(src.links, markdown, textRenderer)
+
+    this.blockGrammars = markdown._blockGrammarsArr
+
+    if (!this.blockGrammars.length) {
+      throw new Error('Grammars size is zero, at least one grammar required')
+    }
   }
 
-  static parse = (src, options) => {
-    const parser = new Parser(options);
+  static parse = (src, markdown) => {
+    const parser = new Parser(src, markdown);
     return parser.parse(src);
   }
 
   // src: generated tokens, parse loop
   parse(src) {
-    this.inlineLexer = new InlineLexer(src.links, this.options);
-    // use an InlineLexer with a TextRenderer to extract pure text
-    this.inlineTextLexer = new InlineLexer(
-      src.links,
-      merge({}, this.options, { renderer: new TextRenderer() }),
-    );
     this.tokens = src.reverse();
 
     let out = ''
@@ -47,7 +42,7 @@ class Parser {
   }
 
   // Get next token
-  next () {
+  next() {
     this.token = this.tokens.pop();
     return this.token;
   }
@@ -70,13 +65,16 @@ class Parser {
   }
 
   // Parse Current Token
-  tok () {
+  tok() {
     let htmlStr = null
 
-    this.grammars.some((grammar) => {
-      htmlStr = grammar.parse(this.token, this.inlineLexer,
-                              this.inlineTextLexer, this.tok.bind(this),
-                              this.next.bind(this), this.parseText.bind(this))
+    this.blockGrammars.some((grammar) => {
+      htmlStr = grammar.parse(
+        this.token, this.inlineLexer,
+        this.inlineTextLexer, this.tok.bind(this),
+        this.next.bind(this), this.parseText.bind(this),
+      )
+
       return htmlStr || htmlStr === ''
     })
 
@@ -91,7 +89,7 @@ class Parser {
       throw new Error(errMsg);
     }
 
-    return htmlStr
+    return htmlStr // eslint-disable-line
   }
 }
 

@@ -6,28 +6,26 @@ import {
   block,
 } from './grammar-rules'
 
-import {
-  getDefaultOptions,
-} from './utils'
-
 class Lexer {
-  constructor(options) {
+  constructor(markdown) {
     this.tokens = [];
     this.tokens.links = Object.create(null);
 
-    this.options = options || getDefaultOptions()
+    // Passed in block grammars
+    this.blockGrammars = markdown._blockGrammarsArr
 
-    // Passed in grammars
-    this.grammars = this.options.grammars
+    if (!this.blockGrammars.length) {
+      throw new Error('Grammars size is zero, at least one grammar required')
+    }
   }
 
   // Expose Block Rules
   static rules = block
 
   // Static Lex Method
-  static lex = (src, options) => {
-    const lexer = new Lexer(options);
-    return lexer.lex(src);
+  static lex = (src, markdown) => {
+    const lexer = new Lexer(markdown)
+    return lexer.lex(src)
   }
 
   lex(src) {
@@ -47,7 +45,7 @@ class Lexer {
     while (src) {
       let isStrMatched = false
 
-      this.grammars.some((grammar) => {
+      this.blockGrammars.some((grammar) => { // eslint-disable-line no-loop-func
         const cap = grammar.rules.block.exec(src)
         if (!cap) {
           return false
@@ -58,7 +56,7 @@ class Lexer {
           return false
         }
 
-        src = subStr || src.substring(cap[0].length);
+        src = subStr || src.substring(cap[0].length)
         isStrMatched = true
 
         return true

@@ -66,17 +66,3 @@ describe('Test slugger functionality', () => {
     expect(slugger.slug('file.txt')).toBe('filetxt');
   });
 });
-
-describe('Test paragraph token type', () => {
-  const marked = new Marked();
-
-  it('should use the "paragraph" type on top level', () => {
-    const md = 'A Paragraph.\n\n> A blockquote\n\n- list item\n';
-
-    const tokens = marked.lexer(md);
-
-    expect(tokens[0].type).toBe('paragraph');
-    expect(tokens[3].type).toBe('paragraph');
-    expect(tokens[7].type).toBe('text');
-  });
-});

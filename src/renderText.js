@@ -3,10 +3,6 @@
  */
 
 class TextRenderer {
-  constructor() {
-
-  }
-
   strong(text) {
     return text
   }
@@ -28,11 +24,11 @@ class TextRenderer {
   }
 
   image(href, title, text) {
-    return '' + text
+    return text.toString()
   }
 
   link(href, title, text) {
-    return '' + text
+    return text.toString()
   }
 
   br() {

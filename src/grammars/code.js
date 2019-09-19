@@ -50,27 +50,24 @@ class Code {
   }
 
   renderHtmlStr(code, infostring, escaped) {
-    var lang = (infostring || '').match(/\S*/)[0];
+    const lang = (infostring || '').match(/\S*/)[0];
+    const { highlight, langPrefix } = this.options
 
-    if (this.options.highlight) {
-      const out = this.options.highlight(code, lang);
+    const languageClass = lang ? ` class="${langPrefix + escape(lang, true)}"` : ''
+    const paddingNewLine = lang ? '\n' : ''
+    let isEscaped = escaped
+    let codeText = code
+
+    if (highlight && typeof highlight === 'function') {
+      const out = highlight(code, lang);
       if (out != null && out !== code) {
-        escaped = true;
-        code = out;
+        isEscaped = true;
+        codeText = out;
       }
     }
 
-    if (!lang) {
-      const codeText = escaped ? code : escape(code, true)
-      return `<pre><code>${codeText}</code></pre>`
-    }
-
-    return '<pre><code class="' +
-      this.options.langPrefix +
-      escape(lang, true) +
-      '">' +
-      (escaped ? code : escape(code, true)) +
-      '</code></pre>\n';
+    codeText = isEscaped ? codeText : escape(codeText, true)
+    return `<pre><code${languageClass}>${codeText}</code></pre>${paddingNewLine}`
   }
 }
 

@@ -29,6 +29,8 @@ class Paragraph {
       text: cap[1].charAt(cap[1].length - 1) === '\n'
         ? cap[1].slice(0, -1) : cap[1],
     })
+
+    return ''
   }
 
   parse(token, inlineLexer) {

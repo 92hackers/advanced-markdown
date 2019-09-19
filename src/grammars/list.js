@@ -50,9 +50,9 @@ class List {
       // list item contains. Hacky.
       if (item.includes('\n ')) {
         space -= item.length;
-        item = !this.options.pedantic ?
-          item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '') :
-          item.replace(/^ {1,4}/gm, '');
+        item = !this.options.pedantic
+          ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
+          : item.replace(/^ {1,4}/gm, '');
       }
 
       // Determine whether the next list item belongs here.
@@ -60,8 +60,9 @@ class List {
       if (i !== capSize - 1) {
         const bulletMatch = block.bullet.exec(itemCap[i + 1])[0];
 
-        if (bull.length > 1 ? bulletMatch.length === 1 :
-          (bulletMatch.length > 1 || (this.options.smartLists && bulletMatch !== bull))) {
+        if (bull.length > 1
+          ? bulletMatch.length === 1
+          : (bulletMatch.length > 1 || (this.options.smartLists && bulletMatch !== bull))) {
           newSrc = itemCap.slice(i + 1).join('\n') + src;
           i = capSize - 1;
         }
@@ -84,7 +85,7 @@ class List {
 
       // Check for task list items
       const istask = /^\[[ xX]\] /.test(item);
-      let ischecked = undefined;
+      let ischecked
 
       if (istask) {
         ischecked = item[1] !== ' ';
@@ -124,7 +125,7 @@ class List {
 
   parse(token, inline, inlineText, tokFunc, nextFunc, parseTextFunc) {
     const {
-      type, ordered, start, loose, checked, task, text,
+      type, ordered, start, loose, checked, task,
     } = token
 
     if (!this.startTokenTypes.includes(type)) {
@@ -169,11 +170,11 @@ class List {
   }
 
   renderCheckbox(checked) {
-    return '<input ' +
-      (checked ? 'checked="" ' : '') +
-      'disabled="" type="checkbox"' +
-      (this.options.xhtml ? ' /' : '') +
-      '> ';
+    return '<input '
+    + (checked ? 'checked="" ' : '')
+    + 'disabled="" type="checkbox"'
+    + (this.options.xhtml ? ' /' : '')
+    + '> ';
   }
 }
 

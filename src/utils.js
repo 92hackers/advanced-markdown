@@ -10,7 +10,7 @@ export function escape(html, encode) {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#39;'
+    "'": '&#39;',
   };
 
   const escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
@@ -18,12 +18,10 @@ export function escape(html, encode) {
 
   if (encode) {
     if (escapeTest.test(html)) {
-      return html.replace(escapeReplace, function(ch) { return replacements[ch]; });
+      return html.replace(escapeReplace, ch => replacements[ch])
     }
-  } else {
-    if (escapeTestNoEncode.test(html)) {
-      return html.replace(escapeReplaceNoEncode, function(ch) { return replacements[ch]; });
-    }
+  } else if (escapeTestNoEncode.test(html)) {
+    return html.replace(escapeReplaceNoEncode, ch => replacements[ch])
   }
 
   return html;
@@ -31,102 +29,115 @@ export function escape(html, encode) {
 
 export function unescape(html) {
   // explicitly match decimal, hex, and named HTML entities
-  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, function(_, n) {
-    n = n.toLowerCase();
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, (_, char) => {
+    const n = char.toLowerCase();
     if (n === 'colon') return ':';
     if (n.charAt(0) === '#') {
       return n.charAt(1) === 'x'
         ? String.fromCharCode(parseInt(n.substring(2), 16))
         : String.fromCharCode(+n.substring(1));
     }
+
     return '';
   });
 }
 
-export function cleanUrl(sanitize, base, href) {
-  var originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+export function cleanUrl(sanitize, base, srcHref) {
+  const originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+  let href = srcHref
 
   if (sanitize) {
+    let prot = ''
     try {
-      var prot = decodeURIComponent(unescape(href))
-        .replace(/[^\w:]/g, '')
-        .toLowerCase();
+      prot = decodeURIComponent(unescape(href)).replace(/[^\w:]/g, '').toLowerCase();
     } catch (e) {
       return null;
     }
-    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-      return null;
+
+    const nonUrlSrcs = ['javascript:', 'vbscript:', 'data:'] // eslint-disable-line
+
+    let isNonUrl = false
+    nonUrlSrcs.some((src) => {
+      isNonUrl = prot.includes(src)
+      return isNonUrl
+    })
+
+    if (isNonUrl) {
+      return null
     }
   }
 
   if (base && !originIndependentUrl.test(href)) {
-    href = resolveUrl(base, href)();
+    href = resolveUrl(base, href)();  // eslint-disable-line
   }
+
   try {
     href = encodeURI(href).replace(/%25/g, '%');
   } catch (e) {
     return null;
   }
+
   return href;
 }
 
-export function edit(regex, opt) {
-  regex = regex.source || regex;
-  opt = opt || '';
+export function edit(srcRegex, srcOpt) {
+  let regex = srcRegex.source || srcRegex;
+  const opt = srcOpt || '';
+
   return {
-    replace: function(name, val) {
-      val = val.source || val;
+    replace: function replace(name, srcVal) {
+      let val = srcVal.source || srcVal;
       val = val.replace(/(^|[^\[])\^/g, '$1');
       regex = regex.replace(name, val);
       return this;
     },
-    getRegex: function() {
-      return new RegExp(regex, opt);
-    }
+    getRegex: () => new RegExp(regex, opt),
   };
 }
 
 export function resolveUrl(base, href) {
-  var baseUrls = {};
+  const baseUrls = {};
 
-  return function() {
-    if (!baseUrls[' ' + base]) {
+  const key = ` ${base}`
+
+  return () => {
+    if (!baseUrls[key]) {
       // we can ignore everything in base after the last slash of its path component,
       // but we might need to add _that_
       // https://tools.ietf.org/html/rfc3986#section-3
       if (/^[^:]+:\/*[^/]*$/.test(base)) {
-        baseUrls[' ' + base] = base + '/';
+        baseUrls[key] = `${base}/`
       } else {
-        baseUrls[' ' + base] = rtrim(base, '/', true);
+        baseUrls[key] = rtrim(base, '/', true); // eslint-disable-line
       }
     }
-    base = baseUrls[' ' + base];
+
+    base = baseUrls[key]; // eslint-disable-line no-param-reassign
 
     if (href.slice(0, 2) === '//') {
       return base.replace(/:[\s\S]*/, ':') + href;
-    } else if (href.charAt(0) === '/') {
-      return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
-    } else {
-      return base + href;
     }
+
+    if (href.charAt(0) === '/') {
+      return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+    }
+
+    return base + href
   }
 }
 
 export function noop() {}
 noop.exec = noop;
 
-export function merge(obj) {
-  var i = 1,
-      target,
-      key;
+export function merge(obj, ...rest) {
+  for (let i = 0; i < rest.length; i++) {
+    const target = rest[i];
 
-  for (; i < arguments.length; i++) {
-    target = arguments[i];
-    for (key in target) {
-      if (Object.prototype.hasOwnProperty.call(target, key)) {
-        obj[key] = target[key];
+    Object.keys(target).forEach((key) => {
+      if (target[key] !== undefined) {
+        obj[key] = target[key]; // eslint-disable-line no-param-reassign
       }
-    }
+    })
   }
 
   return obj;
@@ -141,11 +152,11 @@ export function rtrim(str, c, invert) {
   }
 
   // Length of suffix matching the invert condition.
-  var suffLen = 0;
+  let suffLen = 0;
 
   // Step left until we fail to match the invert condition.
   while (suffLen < str.length) {
-    var currChar = str.charAt(str.length - suffLen - 1);
+    const currChar = str.charAt(str.length - suffLen - 1);
     if (currChar === c && !invert) {
       suffLen++;
     } else if (currChar !== c && invert) {
@@ -158,7 +169,7 @@ export function rtrim(str, c, invert) {
   return str.substr(0, str.length - suffLen);
 }
 
-export function getDefaultOptions(Renderer) {
+export function getDefaultOptions() {
   return {
     baseUrl: null,
     breaks: false,
@@ -169,7 +180,6 @@ export function getDefaultOptions(Renderer) {
     langPrefix: 'language-',
     mangle: true,
     pedantic: false,
-    renderer: Renderer ? new Renderer() : null,
     sanitize: false,
     sanitizer: null,
     silent: false,
@@ -177,6 +187,10 @@ export function getDefaultOptions(Renderer) {
     smartypants: false,
     tables: true,
     xhtml: false,
-    grammars: [],
-  };
+  }
+}
+
+// Attach suctom styles to inline text
+export function inlineStyle(styleStr, text) {
+  return `<span style="${styleStr}">${text}</span>`
 }

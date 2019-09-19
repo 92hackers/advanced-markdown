@@ -8,7 +8,6 @@ import {
 
 import {
   escape,
-  getDefaultOptions,
 } from './utils'
 
 import Renderer from './render'
@@ -17,8 +16,9 @@ function findClosingBracket(str, b) {
   if (str.indexOf(b[1]) === -1) {
     return -1;
   }
-  var level = 0;
-  for (var i = 0; i < str.length; i++) {
+
+  let level = 0;
+  for (let i = 0; i < str.length; i++) {
     if (str[i] === '\\') {
       i++;
     } else if (str[i] === b[0]) {
@@ -34,14 +34,16 @@ function findClosingBracket(str, b) {
 }
 
 class InlineLexer {
-  constructor(links, options) {
-    // TODO: get default options.
-    this.options = options || getDefaultOptions(Renderer)
+  constructor(links, markdown, renderer) {
+    this.options = markdown.options
 
-    this.links = links;
-    this.rules = inline.normal;
-    this.renderer = this.options.renderer || new Renderer();
-    this.renderer.options = this.options;
+    this.links = links
+    this.rules = inline.normal
+    this.renderer = renderer || new Renderer(this.options)
+
+    // Custom inline grammars.
+    // Note: it could be empty
+    this.inlineGrammars = markdown._inlineGrammarsArr;
 
     if (!this.links) {
       throw new Error('Tokens array requires a `links` property.');
@@ -61,59 +63,58 @@ class InlineLexer {
   // Expose Inline Rules
   static rules = inline
 
-  static output = function(src, links, options) {
-    var inline = new InlineLexer(links, options);
-    return inline.output(src);
+  static output = (src, links, options) => {
+    const inlineLexer = new InlineLexer(links, options);
+    return inlineLexer.output(src);
   };
 
-  static escapes = function(text) {
-    return text ? text.replace(InlineLexer.rules._escapes, '$1') : text;
-  };
+  // eslint-disable-next-line
+  static escapes = text => text ? text.replace(InlineLexer.rules._escapes, '$1') : text
 
-  output(src) {
-    var out = '',
-      link,
-      text,
-      href,
-      title,
-      cap,
-      prevCapZero;
+  output(originalSrc) {
+    let out = ''
+    let link = ''
+    let text = ''
+    let href = ''
+    let title = ''
+    let cap = ''
+    let prevCapZero = ''
+
+    let src = originalSrc
 
     while (src.length > 0) {
+      let isStrMatched = false
+
+      // Match custom inline grammars
+      this.inlineGrammars.some((grammar) => { // eslint-disable-line no-loop-func
+        const matchedStr = grammar.rules.inline.exec(src)
+        if (!matchedStr) {
+          return false
+        }
+
+        // Get truncated src string
+        const subStr = grammar.parse(matchedStr, src, this.output.bind(this), this.links)
+
+        if (subStr === -1) {
+          return false
+        }
+
+        out += subStr
+        src = src.substring(matchedStr[0].length)
+        isStrMatched = true
+
+        return true
+      })
+
+      // If custom inline grammar matched, jump to next match
+      if (isStrMatched) {
+        continue
+      }
+
       // escape
       if (cap = this.rules.escape.exec(src)) {
         src = src.substring(cap[0].length);
         out += escape(cap[1]);
-        continue;
-      }
-
-      // font color
-      if (cap = this.rules.fontColor.exec(src)) {
-        const [fullMatch, color, text] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontColor(color, this.output(text))
-
-        continue
-      }
-
-      // font background color
-      if (cap = this.rules.fontBgColor.exec(src)) {
-        const [fullMatch, bgColor, text] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontBgColor(bgColor, this.output(text))
-
-        continue
-      }
-
-      // font size
-      if (cap = this.rules.fontSize.exec(src)) {
-        const [fullMatch, size, text] = cap
-
-        src = src.substring(fullMatch.length)
-        out += this.renderer.fontSize(size, this.output(text))
-
         continue;
       }
 
@@ -124,26 +125,29 @@ class InlineLexer {
         } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
           this.inLink = false;
         }
+
         if (!this.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
           this.inRawBlock = true;
         } else if (this.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
           this.inRawBlock = false;
         }
 
+        const { sanitize, sanitizer } = this.options
+
         src = src.substring(cap[0].length);
-        out += this.options.sanitize ?
-          this.options.sanitizer ?
-          this.options.sanitizer(cap[0]) :
-          escape(cap[0]) :
-          cap[0];
+
+        const sanitizedText = sanitizer ? sanitizer(cap[0]) : escape(cap[0])
+        out += sanitize ? sanitizedText : cap[0];
+
         continue;
       }
 
       // link
       if (cap = this.rules.link.exec(src)) {
-        var lastParenIndex = findClosingBracket(cap[2], '()');
+        const lastParenIndex = findClosingBracket(cap[2], '()');
         if (lastParenIndex > -1) {
-          var linkLen = cap[0].length - (cap[2].length - lastParenIndex) - (cap[3] || '').length;
+          const linkLen = cap[0].length - (cap[2].length - lastParenIndex) - (cap[3] || '').length;
+
           cap[2] = cap[2].substring(0, lastParenIndex);
           cap[0] = cap[0].substring(0, linkLen).trim();
           cap[3] = '';
@@ -166,15 +170,14 @@ class InlineLexer {
         href = href.trim().replace(/^<([\s\S]*)>$/, '$1');
         out += this.outputLink(cap, {
           href: InlineLexer.escapes(href),
-          title: InlineLexer.escapes(title)
+          title: InlineLexer.escapes(title),
         });
         this.inLink = false;
         continue;
       }
 
       // reflink, nolink
-      if ((cap = this.rules.reflink.exec(src)) ||
-        (cap = this.rules.nolink.exec(src))) {
+      if ((cap = this.rules.reflink.exec(src)) || (cap = this.rules.nolink.exec(src))) {
         src = src.substring(cap[0].length);
         link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
         link = this.links[link.toLowerCase()];
@@ -199,7 +202,9 @@ class InlineLexer {
       // em
       if (cap = this.rules.em.exec(src)) {
         src = src.substring(cap[0].length);
-        out += this.renderer.em(this.output(cap[6] || cap[5] || cap[4] || cap[3] || cap[2] || cap[1]));
+        out += this.renderer.em(this.output(
+          cap[6] || cap[5] || cap[4] || cap[3] || cap[2] || cap[1],
+        ));
         continue;
       }
 
@@ -282,12 +287,12 @@ class InlineLexer {
 
   // Compile link
   outputLink(cap, link) {
-    var href = link.href,
-      title = link.title ? escape(link.title) : null;
+    const { href } = link
+    const title = link.title ? escape(link.title) : null;
 
-    return cap[0].charAt(0) !== '!' ?
-      this.renderer.link(href, title, this.output(cap[1])) :
-      this.renderer.image(href, title, escape(cap[1]));
+    return cap[0].charAt(0) !== '!'
+      ? this.renderer.link(href, title, this.output(cap[1]))
+      : this.renderer.image(href, title, escape(cap[1]));
   }
 
   // Smartypants Transformations
@@ -313,16 +318,15 @@ class InlineLexer {
   // mangle links
   mangle(text) {
     if (!this.options.mangle) return text;
-    var out = '',
-      l = text.length,
-      i = 0,
-      ch;
+    let out = ''
+    let ch = ''
 
-    for (; i < l; i++) {
+    for (let i = 0; i < text.length; i++) {
       ch = text.charCodeAt(i);
       if (Math.random() > 0.5) {
         ch = 'x' + ch.toString(16);
       }
+
       out += '&#' + ch + ';';
     }
 
