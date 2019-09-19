@@ -10,7 +10,7 @@ A brief introduction of advanced markdown.
 
 ## Features
 
-add features
+Support write custom markdown grammars
 
 ## Table of content
 
