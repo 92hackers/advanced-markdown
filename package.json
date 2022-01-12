@@ -59,7 +59,7 @@
     "istanbul": "^0.4.5",
     "jasmine": "^3.4.0",
     "markdown": "0.x",
-    "markdown-it": "8.x",
+    "markdown-it": "12.x",
     "node-fetch": "^2.3.0"
   },
   "scripts": {
