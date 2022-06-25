@@ -60,7 +60,7 @@
     "jasmine": "^3.4.0",
     "markdown": "0.x",
     "markdown-it": "8.x",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.6.7"
   },
   "scripts": {
     "compile": "babel src --out-dir dist",
